@@ -8,3 +8,8 @@ func CreatePost(db *sql.DB, title string) (int, error) {
 
 	return postId, err
 }
+
+func GetPost(db *sql.DB, id int) (title string) {
+	db.QueryRow("SELECT title FROM posts WHERE id = $1", id).Scan(&title)
+	return
+}

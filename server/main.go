@@ -21,10 +21,13 @@ func Init() {
 		log.Fatal(err)
 	}
 
-	model := &model{db}
+	postModel := &postModel{
+		model: model{db},
+	}
 
-	echo.GET("/", model.GetIndex)
-	echo.POST("/posts", model.CreatePost)
+	echo.GET("/", postModel.getIndex)
+	echo.POST("/posts", postModel.create)
+	echo.GET("/posts/:id", postModel.get)
 
 	server := http.Server{
 		Addr:    ":3000",
