@@ -23,7 +23,8 @@ func Init() {
 
 	model := &model{db}
 
-	echo.GET("/", model.GetPost)
+	echo.GET("/", model.GetIndex)
+	echo.POST("/posts", model.CreatePost)
 
 	server := http.Server{
 		Addr:    ":3000",
