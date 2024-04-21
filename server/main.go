@@ -35,7 +35,7 @@ func (server *server) Init() {
 
 	echo.GET("/", home)
 	echo.POST("/posts", server.handleCreatePost)
-	echo.GET("/posts/:id", server.getPost)
+	echo.GET("/posts/:id", server.handleGetPost)
 
 	// TODO: change to HTTPS server before release: https://echo.labstack.com/docs/start-server#https-server
 	if err := server.config.ListenAndServe(); err != http.ErrServerClosed {

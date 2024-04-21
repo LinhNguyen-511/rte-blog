@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"rte-blog/templates"
 	"strconv"
@@ -19,7 +20,7 @@ func (server *server) handleCreatePost(context echo.Context) error {
 	return err
 }
 
-func (server *server) getPost(context echo.Context) error {
+func (server *server) handleGetPost(context echo.Context) error {
 	idParam := context.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -29,7 +30,7 @@ func (server *server) getPost(context echo.Context) error {
 	title, err := server.postModel.GetById(id)
 
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
 	return templates.Render(context, http.StatusOK, templates.Post(title))

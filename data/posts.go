@@ -21,6 +21,6 @@ func (model *PostModel) Create(title string) (postId int, err error) {
 }
 
 func (model *PostModel) GetById(id int) (title string, err error) {
-	model.Store.QueryRow("SELECT title FROM posts WHERE id = $1", id).Scan(title)
+	model.Store.QueryRow("SELECT title FROM posts WHERE id = $1", id).Scan(&title)
 	return title, nil
 }
