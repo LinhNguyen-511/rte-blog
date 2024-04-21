@@ -1,7 +1,6 @@
 package server
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"rte-blog/data"
@@ -9,33 +8,37 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type model struct {
-	db *sql.DB
+type server struct {
+	config    *http.Server
+	postModel *data.PostModel
 }
 
-func Init() {
-	echo := echo.New()
+// TODO: maybe create an interface for server config
 
-	db, err := data.Connect()
+func New() *server {
+	store, err := data.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	postModel := &postModel{
-		model: model{db},
+	return &server{
+		config: &http.Server{
+			Addr: ":3000",
+		},
+		postModel: &data.PostModel{Store: store},
 	}
+}
 
-	echo.GET("/", postModel.getIndex)
-	echo.POST("/posts", postModel.create)
-	echo.GET("/posts/:id", postModel.get)
+func (server *server) Init() {
+	echo := echo.New()
+	server.config.Handler = echo
 
-	server := http.Server{
-		Addr:    ":3000",
-		Handler: echo,
-	}
+	echo.GET("/", home)
+	echo.POST("/posts", server.handleCreatePost)
+	echo.GET("/posts/:id", server.getPost)
 
 	// TODO: change to HTTPS server before release: https://echo.labstack.com/docs/start-server#https-server
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+	if err := server.config.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }

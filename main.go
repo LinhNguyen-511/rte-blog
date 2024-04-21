@@ -7,5 +7,6 @@ import (
 
 func main() {
 	services.LoadEnv()
+	server := server.New()
 	server.Init()
 }

@@ -10,8 +10,8 @@ import (
 
 func Connect() (*sql.DB, error) {
 	var (
-		dbName = "rte_blog"
-		user = os.Getenv("PQ_USERNAME") 
+		dbName   = "rte_blog"
+		user     = os.Getenv("PQ_USERNAME")
 		password = os.Getenv("PQ_PASSWORD")
 	)
 
