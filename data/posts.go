@@ -4,7 +4,7 @@ import "database/sql"
 
 type PostStore interface {
 	Create(title string) (int, error)
-	GetById(id int) error
+	GetById(id int) (title string, err error)
 }
 
 type PostModel struct {

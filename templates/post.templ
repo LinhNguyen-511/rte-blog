@@ -1,5 +1,35 @@
 package templates 
 
-templ Post(title string) {
-	<p>{ title }</p>
+import (
+	"rte-blog/types"
+)
+
+templ PostLayout(post types.Post) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@head()
+		@body(post)
+	</html>
+}
+
+templ head() {
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>RTE Blog</title>
+		<script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
+	</head>
+}
+
+templ body(post types.Post) {
+	<body>
+		<nav>
+			@newPostButton()
+		</nav>
+		<main>
+			<h1>{ post.Title }</h1>
+			<p>{ post.AuthorName }</p>
+			<p>{ post.PublishedAt.String() }</p>
+		</main>
+	</body>
 }

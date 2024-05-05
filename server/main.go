@@ -10,7 +10,7 @@ import (
 
 type server struct {
 	config    *http.Server
-	postModel *data.PostModel
+	postModel data.PostStore
 }
 
 // TODO: maybe create an interface for server config
@@ -33,7 +33,7 @@ func (server *server) Init() {
 	echo := echo.New()
 	server.config.Handler = echo
 
-	echo.GET("/", home)
+	// echo.GET("/", )
 	echo.POST("/posts", server.handleCreatePost)
 	echo.GET("/posts/:id", server.handleGetPost)
 
