@@ -2,6 +2,8 @@ package templates
 
 import (
 	"rte-blog/types"
+	"fmt"
+	"strconv"
 )
 
 templ PostLayout(post types.Post) {
@@ -18,6 +20,7 @@ templ head() {
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>RTE Blog</title>
 		<script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
 	</head>
 }
 
@@ -27,7 +30,15 @@ templ body(post types.Post) {
 			@newPostButton()
 		</nav>
 		<main>
-			<h1>{ post.Title }</h1>
+			<h1
+				id="title"
+				name="title"
+				contenteditable
+				_="on htmx:configRequest(parameters) set parameters['title'] to my innerHTML"
+				hx-trigger="keyup"
+				hx-put={ string(templ.URL(fmt.Sprintf("/posts/%s/title", strconv.Itoa(post.Id)))) }
+				hx-swap="none"
+			>{ post.Title }</h1>
 			<p>{ post.AuthorName }</p>
 			<p>{ post.PublishedAt.String() }</p>
 		</main>

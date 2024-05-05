@@ -3,9 +3,9 @@ package server
 import (
 	"log"
 	"net/http"
+	"rte-blog/services"
 	"rte-blog/templates"
 	"rte-blog/types"
-	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -19,14 +19,14 @@ func (server *server) handleCreatePost(context echo.Context) error {
 }
 
 func (server *server) handleGetPost(context echo.Context) error {
-	idParam := context.Param("id")
-	id, err := strconv.Atoi(idParam)
+	id, err := services.ExtractIdFromContext(context)
 	if err != nil {
 		return err
 	}
 
 	title, err := server.postModel.GetById(id)
 	post := types.Post{
+		Id:          id,
 		Title:       title,
 		AuthorName:  "",
 		PublishedAt: time.Now(),
@@ -38,4 +38,14 @@ func (server *server) handleGetPost(context echo.Context) error {
 	}
 
 	return templates.Render(context, http.StatusOK, templates.PostLayout(post))
+}
+
+func (server *server) handlePutPostTitle(context echo.Context) error {
+	id, err := services.ExtractIdFromContext(context)
+	if err != nil {
+		return err
+	}
+
+	title := context.FormValue("title")
+	return server.postModel.PutTitle(title, id)
 }
