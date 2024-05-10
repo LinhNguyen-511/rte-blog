@@ -24,7 +24,7 @@ func New() *server {
 		Password: os.Getenv("PQ_PASSWORD"),
 	}
 
-	store := data.Connect(data.GenerateConnectionString(dbConfig))
+	store := data.Connect(dbConfig)
 	defer store.Close()
 
 	return &server{

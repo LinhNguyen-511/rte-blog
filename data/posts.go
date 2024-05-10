@@ -1,11 +1,14 @@
 package data
 
-import "database/sql"
+import (
+	"database/sql"
+	"rte-blog/types"
+)
 
 type PostStore interface {
 	Create(title string) (int, error)
 	GetById(id int) (title string, err error)
-	PutTitle(title string, id int) error
+	PutTitle(post types.Post) (types.Post, error)
 }
 
 type PostModel struct {
@@ -26,7 +29,7 @@ func (model *PostModel) GetById(id int) (title string, err error) {
 	return title, nil
 }
 
-func (model *PostModel) PutTitle(title string, id int) (err error) {
-	_, err = model.Store.Exec("UPDATE posts SET title = $1 WHERE id = $2", title, id)
-	return err
+func (model *PostModel) PutTitle(post types.Post) (types.Post, error) {
+	_, err := model.Store.Exec("UPDATE posts SET title = $1 WHERE id = $2", post.Title, post.Id)
+	return post, err
 }

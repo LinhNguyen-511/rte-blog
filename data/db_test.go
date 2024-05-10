@@ -8,23 +8,37 @@ import (
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func TestMain(m *testing.M) {
-	const testDbName = "rte_blog_test"
-	dbConfig := types.DbConfig{
-		DbName:   "postgres",
-		User:     os.Getenv("PQ_USERNAME"),
-		Password: os.Getenv("PQ_PASSWORD"),
-	}
-	dbConnectionString := GenerateConnectionString(dbConfig)
+const defaultDbName = "postgres"
+const testDbName = "rte_blog_test"
 
-	db := getTestDatabaseConnection(dbConnectionString)
+var db *sql.DB
+
+var dbConfig = types.DbConfig{
+	DbName:   defaultDbName,
+	User:     "tester",
+	Password: "testing123",
+}
+
+var dbConfigMigration = types.DbConfig{
+	DbName:   testDbName,
+	User:     "tester",
+	Password: "testing123",
+}
+
+func TestMain(m *testing.M) {
+	db = getTestDatabaseConnection()
+
+	err := createTestDatabase(db, testDbName)
 	defer db.Close()
 
-	createTestDatabase(db, testDbName)
-
-	runMigrations(dbConnectionString)
+	if err != nil {
+		log.Print(err)
+	}
+	runMigrations()
 
 	exitVal := m.Run()
 
@@ -33,39 +47,38 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func getTestDatabaseConnection(connectionString string) *sql.DB {
-	db := Connect(connectionString)
-
-	return db
+func getTestDatabaseConnection() *sql.DB {
+	return Connect(dbConfig)
 }
 
-func createTestDatabase(db *sql.DB, testDbName string) {
-	_, err := db.Exec("CREATE DATABASE $1 IF NOT EXISTS", testDbName)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+func createTestDatabase(db *sql.DB, testDbName string) error {
+	_, err := db.Exec("CREATE DATABASE " + testDbName)
+	return err
 }
 
-func runMigrations(connectionString string) {
+func runMigrations() {
+	connectionString := generateConnectionString(dbConfigMigration)
 	migration, err := migrate.New(
-		"file://data/migrations",
-		connectionString)
+		"file://migrations",
+		connectionString,
+	)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	if err := migration.Up(); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
+
+	migration.Close()
 }
 
 func deleteTestDatabase(db *sql.DB, testDbName string) error {
-	_, err := db.Exec("DROP DATABASE $1 IF EXISTS", testDbName)
+	_, err := db.Exec("DROP DATABASE " + testDbName)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	return err

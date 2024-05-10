@@ -4,6 +4,7 @@ go 1.22.0
 
 require (
 	github.com/a-h/templ v0.2.663
+	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
