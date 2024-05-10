@@ -3,20 +3,23 @@ package data
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"log"
 
 	_ "github.com/lib/pq"
+
+	"rte-blog/types"
 )
 
-func Connect() (*sql.DB, error) {
-	var (
-		dbName   = "rte_blog"
-		user     = os.Getenv("PQ_USERNAME")
-		password = os.Getenv("PQ_PASSWORD")
-	)
+func GenerateConnectionString(config types.DbConfig) string {
+	return fmt.Sprintf("postgres://%s:%s@localhost/%s?sslmode=disable", config.DbName, config.User, config.Password)
+}
 
-	connectionString := fmt.Sprintf("dbname=%s user=%s password=%s", dbName, user, password)
+func Connect(connectionString string) *sql.DB {
 	db, err := sql.Open("postgres", connectionString)
 
-	return db, err
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return db
 }

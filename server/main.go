@@ -3,7 +3,9 @@ package server
 import (
 	"log"
 	"net/http"
+	"os"
 	"rte-blog/data"
+	"rte-blog/types"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,10 +18,14 @@ type server struct {
 // TODO: maybe create an interface for server config
 
 func New() *server {
-	store, err := data.Connect()
-	if err != nil {
-		log.Fatal(err)
+	dbConfig := types.DbConfig{
+		DbName:   "rte_blog",
+		User:     os.Getenv("PQ_USERNAME"),
+		Password: os.Getenv("PQ_PASSWORD"),
 	}
+
+	store := data.Connect(data.GenerateConnectionString(dbConfig))
+	defer store.Close()
 
 	return &server{
 		config: &http.Server{
