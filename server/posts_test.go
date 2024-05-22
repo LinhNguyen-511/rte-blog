@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
+	"rte-blog/types"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -14,16 +15,16 @@ type StubPostModel struct {
 	Store *sql.DB
 }
 
-func (model *StubPostModel) Create(title string) (postId int, err error) {
-	return 1, err
+func (model *StubPostModel) Create(title string) (int, error) {
+	return 1, nil
 }
 
-func (model *StubPostModel) GetById(id int) (title string, err error) {
+func (model *StubPostModel) GetById(id int) (string, error) {
 	return "Sample post", nil
 }
 
-func (model *StubPostModel) PutTitle(title string, id int) (err error) {
-	return nil
+func (model *StubPostModel) PutTitle(post types.Post) (types.Post, error) {
+	return post, nil
 }
 
 func TestHandleGetPost(t *testing.T) {

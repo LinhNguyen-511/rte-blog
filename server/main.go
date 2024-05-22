@@ -25,7 +25,6 @@ func New() *server {
 	}
 
 	store := data.Connect(dbConfig)
-	defer store.Close()
 
 	return &server{
 		config: &http.Server{

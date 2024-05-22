@@ -47,5 +47,12 @@ func (server *server) handlePutPostTitle(context echo.Context) error {
 	}
 
 	title := context.FormValue("title")
-	return server.postModel.PutTitle(title, id)
+	post := types.Post{
+		Title: title,
+		Id:    id,
+	}
+
+	_, err = server.postModel.PutTitle(post)
+
+	return err
 }
