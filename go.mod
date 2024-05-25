@@ -13,7 +13,9 @@ require (
 )
 
 require (
+	github.com/PuerkitoBio/goquery v1.9.2 // indirect
 	github.com/a-h/htmlformat v0.0.0-20231108124658-5bd994fe268e // indirect
+	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

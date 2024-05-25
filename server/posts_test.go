@@ -2,11 +2,14 @@ package server
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"rte-blog/types"
+	"strings"
 	"testing"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,6 +30,10 @@ func (model *StubPostModel) PutTitle(post types.Post) (types.Post, error) {
 	return post, nil
 }
 
+func (model *StubPostModel) PostContent(id int) (int, error) {
+	return 1, nil
+}
+
 func TestHandleGetPost(t *testing.T) {
 	t.Run("returns a post with title, meta-data and content", func(t *testing.T) {
 		postModel := &StubPostModel{Store: &sql.DB{}}
@@ -44,11 +51,17 @@ func TestHandleGetPost(t *testing.T) {
 		context.SetParamNames("id")
 		context.SetParamValues("1")
 
-		// Assertions
 		if assert.NoError(t, server.handleGetPost(context)) {
 			assert.Equal(t, http.StatusOK, response.Code)
 
-			assert.Equal(t, "<p>Sample post</p>", response.Body.String())
+			doc, err := goquery.NewDocumentFromReader(strings.NewReader(response.Body.String()))
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			title := doc.Find("h1").First().Text()
+
+			assert.Equal(t, "Sample post", title)
 		}
 	})
 }

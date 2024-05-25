@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"fmt"
 	"rte-blog/types"
 )
 
@@ -9,6 +10,7 @@ type PostStore interface {
 	Create(title string) (int, error)
 	GetById(id int) (title string, err error)
 	PutTitle(post types.Post) (types.Post, error)
+	PostContent(id int) (int, error)
 }
 
 type PostModel struct {
@@ -32,4 +34,12 @@ func (model *PostModel) GetById(id int) (title string, err error) {
 func (model *PostModel) PutTitle(post types.Post) (types.Post, error) {
 	_, err := model.Store.Exec("UPDATE posts SET title = $1 WHERE id = $2", post.Title, post.Id)
 	return post, err
+}
+
+func (model *PostModel) PostContent(id int) (int, error) {
+	var contentId int
+	err := model.Store.QueryRow("INSERT INTO paragraphs(value) VALUES($1) RETURNING id", "").Scan(&contentId)
+	model.Store.QueryRow("UPDATE posts SET contents = array_append(contents, $1) WHERE id = $2", fmt.Sprintf("paragraphs:%d", contentId), id)
+
+	return contentId, err
 }

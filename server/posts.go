@@ -56,3 +56,14 @@ func (server *server) handlePutPostTitle(context echo.Context) error {
 
 	return err
 }
+
+func (server *server) handleContentCreate(context echo.Context) error {
+	id, err := services.ExtractIdFromContext(context)
+	if err != nil {
+		return err
+	}
+
+	_, err = server.postModel.PostContent(id)
+
+	return err
+}
