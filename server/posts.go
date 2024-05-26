@@ -65,5 +65,6 @@ func (server *server) handleContentCreate(context echo.Context) error {
 
 	_, err = server.postModel.PostContent(id)
 
+	// TODO return the whole main element with title, meta-data, contents in the correct order
 	return err
 }
