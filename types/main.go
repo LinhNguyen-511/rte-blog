@@ -13,5 +13,15 @@ type Post struct {
 	Title       string
 	AuthorName  string
 	PublishedAt time.Time
-	Content     []string
+	Contents    []Content
 }
+
+type Content struct {
+	Id    int
+	Value string
+	Type  string
+}
+
+const (
+	ContentParagraph = "paragraph"
+)

@@ -2,6 +2,7 @@ package server
 
 import (
 	"database/sql"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -31,8 +32,8 @@ func (model *StubPostModel) PutTitle(post types.Post) (types.Post, error) {
 	return post, nil
 }
 
-func (model *StubPostModel) PostContent(id int) (int, error) {
-	return 1, nil
+func (model *StubPostModel) PostContent(id int) (types.Content, error) {
+	return types.Content{Id: 1}, nil
 }
 
 func TestHandleGetPost(t *testing.T) {
@@ -60,7 +61,28 @@ func TestHandleGetPost(t *testing.T) {
 
 func TestHandleContentCreate(t *testing.T) {
 	t.Run("returns new main element when creating a new content block", func(t *testing.T) {
+		server := createServer(t)
 
+		context, response := makeRequest(t, http.MethodGet, "/posts/1/paragraphs", nil)
+		context.SetParamNames("id")
+		context.SetParamValues("1")
+
+		if assert.NoError(t, server.handleGetPost(context)) {
+			assert.Equal(t, http.StatusOK, response.Code)
+
+			responseBody := response.Body.String()
+			fmt.Print(responseBody)
+			doc, err := goquery.NewDocumentFromReader(strings.NewReader(responseBody))
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			doc.Find("article").Each(func(i int, s *goquery.Selection) {
+				hasNewParagraph := s.Is("[data-testid='paragraph-1']")
+
+				assert.Equal(t, true, hasNewParagraph)
+			})
+		}
 	})
 }
 

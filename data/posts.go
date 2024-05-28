@@ -10,7 +10,7 @@ type PostStore interface {
 	Create(title string) (int, error)
 	GetById(id int) (title string, err error)
 	PutTitle(post types.Post) (types.Post, error)
-	PostContent(id int) (int, error)
+	PostContent(id int) (types.Content, error)
 }
 
 type PostModel struct {
@@ -36,10 +36,10 @@ func (model *PostModel) PutTitle(post types.Post) (types.Post, error) {
 	return post, err
 }
 
-func (model *PostModel) PostContent(id int) (int, error) {
+func (model *PostModel) PostContent(id int) (types.Content, error) {
 	var contentId int
 	err := model.Store.QueryRow("INSERT INTO paragraphs(value) VALUES($1) RETURNING id", "").Scan(&contentId)
 	model.Store.QueryRow("UPDATE posts SET contents = array_append(contents, $1) WHERE id = $2", fmt.Sprintf("paragraphs:%d", contentId), id)
 
-	return contentId, err
+	return types.Content{Id: contentId, Value: "", Type: types.ContentParagraph}, err
 }

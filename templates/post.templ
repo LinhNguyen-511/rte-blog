@@ -29,12 +29,12 @@ templ body(post types.Post) {
 		<nav>
 			@newPostButton()
 		</nav>
-		@Main(post types.Post)
+		@Main(post)
 	</body>
 }
 
 templ Main(post types.Post) {
-	<main hx-post={ string(templ.URL(fmt.Sprintf("/posts/%s/content", strconv.Itoa(post.Id)))) } hx-trigger="keyup[key=='Enter']">
+	<main hx-post={ string(templ.URL(fmt.Sprintf("/posts/%s/paragraphs", strconv.Itoa(post.Id)))) } hx-trigger="keyup[key=='Enter']">
 		<header>
 			<h1
 				id="title"
@@ -52,13 +52,13 @@ templ Main(post types.Post) {
 			<p data-testid="publish-date">{ post.PublishedAt.String() }</p>
 		</header>
 		<article>
-			@content(post.Content)
+			@content(post.Contents)
 		</article>
 	</main>
 }
 
-templ content(content []string) {
-	for _, paragraph := range content {
-		<p>{ paragraph }</p>
+templ content(contents []types.Content) {
+	for _, paragraph := range contents {
+		<p data-testid="paragraph-1">{ paragraph.Value }</p>
 	}
 }

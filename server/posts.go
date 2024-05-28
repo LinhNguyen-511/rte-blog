@@ -30,7 +30,7 @@ func (server *server) handleGetPost(context echo.Context) error {
 		Title:       title,
 		AuthorName:  "",
 		PublishedAt: time.Now(),
-		Content:     []string{title},
+		Contents:    []types.Content{},
 	}
 
 	if err != nil {
@@ -57,7 +57,7 @@ func (server *server) handlePutPostTitle(context echo.Context) error {
 	return err
 }
 
-func (server *server) handleContentCreate(context echo.Context) error {
+func (server *server) handleParagraphCreate(context echo.Context) error {
 	id, err := services.ExtractIdFromContext(context)
 	if err != nil {
 		return err
