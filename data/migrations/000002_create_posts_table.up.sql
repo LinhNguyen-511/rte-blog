@@ -7,6 +7,5 @@ CREATE TABLE IF NOT EXISTS posts (
     author_id INT REFERENCES authors,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    published_at TIMESTAMP DEFAULT NULL,
-    contents TEXT[]
+    published_at TIMESTAMP DEFAULT NULL
 );
