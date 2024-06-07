@@ -44,6 +44,10 @@ templ Main(post types.Post) {
 			<h1
 				id="title"
 				name="title"
+				_="on htmx:configRequest(parameters) set parameters['title'] to my innerHTML"
+				hx-trigger="keyup[key!='Enter']"
+				hx-put={ string(templ.URL(fmt.Sprintf("/posts/%s/title", strconv.Itoa(post.Id)))) }
+				hx-swap="none"
 				contenteditable
 				data-testid="title"
 			>
