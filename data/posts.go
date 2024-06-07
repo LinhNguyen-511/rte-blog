@@ -2,7 +2,6 @@ package data
 
 import (
 	"database/sql"
-	"fmt"
 	"rte-blog/types"
 )
 
@@ -10,7 +9,7 @@ type PostStore interface {
 	Create(title string) (int, error)
 	GetById(id int) (title string, err error)
 	PutTitle(post types.Post) (types.Post, error)
-	PostContent(id int) (types.Content, error)
+	PostContent(id int, orderInPost int) (types.Content, error)
 }
 
 type PostModel struct {
@@ -36,10 +35,16 @@ func (model *PostModel) PutTitle(post types.Post) (types.Post, error) {
 	return post, err
 }
 
-func (model *PostModel) PostContent(id int) (types.Content, error) {
-	var contentId int
-	err := model.Store.QueryRow("INSERT INTO paragraphs(value) VALUES($1) RETURNING id", "").Scan(&contentId)
-	model.Store.QueryRow("UPDATE posts SET contents = array_append(contents, $1) WHERE id = $2", fmt.Sprintf("paragraphs:%d", contentId), id)
+func (model *PostModel) PostContent(id int, orderInPost int) (types.Content, error) {
+	// insert into posts_contents -> content_id
 
-	return types.Content{Id: contentId, Value: "", Type: types.ContentParagraph}, err
+	// insert into paragraphs
+
+	return types.Content{}, nil
 }
+
+// func (model *PostModel) GetAllContents() ([]types.Content, error) {
+// 	// transaction to return all contents in order
+
+// 	return []types.Content{}, nil
+// }

@@ -34,16 +34,17 @@ templ body(post types.Post) {
 }
 
 templ Main(post types.Post) {
-	<main hx-post={ string(templ.URL(fmt.Sprintf("/posts/%s/paragraphs", strconv.Itoa(post.Id)))) } hx-trigger="keyup[key=='Enter']">
+	<main
+		hx-post={ string(templ.URL(fmt.Sprintf("/posts/%s/paragraphs", strconv.Itoa(post.Id)))) }
+		hx-vals={ string(fmt.Sprintf("{\"orderInPost\": %d}", len(post.Contents))) }
+		hx-trigger="keyup[key=='Enter']"
+		hx-swap="none"
+	>
 		<header>
 			<h1
 				id="title"
 				name="title"
 				contenteditable
-				_="on htmx:configRequest(parameters) set parameters['title'] to my innerHTML"
-				hx-trigger="keyup"
-				hx-put={ string(templ.URL(fmt.Sprintf("/posts/%s/title", strconv.Itoa(post.Id)))) }
-				hx-swap="none"
 				data-testid="title"
 			>
 				{ post.Title }

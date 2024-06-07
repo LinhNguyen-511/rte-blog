@@ -63,7 +63,7 @@ func (server *server) handleParagraphCreate(context echo.Context) error {
 		return err
 	}
 
-	_, err = server.postModel.PostContent(id)
+	_, err = server.postModel.PostContent(id, 1)
 
 	// TODO return the whole main element with title, meta-data, contents in the correct order
 	return err
