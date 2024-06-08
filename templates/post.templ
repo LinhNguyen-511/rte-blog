@@ -27,7 +27,7 @@ templ head() {
 templ body(post types.Post) {
 	<body>
 		<nav>
-			@newPostButton()
+			@NewPostButton()
 		</nav>
 		@Main(post)
 	</body>
@@ -49,6 +49,7 @@ templ Main(post types.Post) {
 				hx-put={ string(templ.URL(fmt.Sprintf("/posts/%s/title", strconv.Itoa(post.Id)))) }
 				hx-swap="none"
 				contenteditable
+				hx-params="none"
 				data-testid="title"
 			>
 				{ post.Title }
@@ -63,7 +64,11 @@ templ Main(post types.Post) {
 }
 
 templ content(contents []types.Content) {
-	for _, paragraph := range contents {
-		<p data-testid="paragraph-1">{ paragraph.Value }</p>
+	for index, paragraph := range contents {
+		if index == len(contents)-1 {
+			<p autofocus id={ string(fmt.Sprintf("paragraph-%d", index)) }>{ paragraph.Value }</p>
+		} else {
+			<p id={ string(fmt.Sprintf("paragraph-%d", index)) }>{ paragraph.Value }</p>
+		}
 	}
 }

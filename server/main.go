@@ -38,7 +38,7 @@ func (server *server) Init() {
 	echo := echo.New()
 	server.config.Handler = echo
 
-	// echo.GET("/", )
+	echo.GET("/", server.handleGetIndex)
 	echo.POST("/posts", server.handleCreatePost)
 	echo.GET("/posts/:id", server.handleGetPost)
 	echo.PUT("/posts/:id/title", server.handlePutPostTitle)

@@ -11,6 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func (server *server) handleGetIndex(context echo.Context) error {
+	return templates.Render(context, http.StatusOK, templates.NewPostButton())
+}
+
 func (server *server) handleCreatePost(context echo.Context) error {
 	title := context.FormValue("title")
 	_, err := server.postModel.Create(title)
@@ -58,13 +62,16 @@ func (server *server) handlePutPostTitle(context echo.Context) error {
 }
 
 func (server *server) handleParagraphCreate(context echo.Context) error {
-	id, err := services.ExtractIdFromContext(context)
-	if err != nil {
-		return err
-	}
+	// id, err := services.ExtractIdFromContext(context)
+	// if err != nil {
+	// return err
+	// }
 
-	_, err = server.postModel.PostContent(id, 1)
+	// _, err = server.postModel.PostContent(id, 1)
+
+	contents := [1]types.Content{}
+	contents[0] = types.Content{Id: 1, Value: "new", Type: "paragraphs"}
 
 	// TODO return the whole main element with title, meta-data, contents in the correct order
-	return err
+	return templates.Render(context, http.StatusOK, templates.Main(types.Post{Title: "hello", AuthorName: "Linh", Contents: contents[:]}))
 }
