@@ -12,7 +12,7 @@ import (
 )
 
 func (server *server) handleGetIndex(context echo.Context) error {
-	return templates.Render(context, http.StatusOK, templates.NewPostButton())
+	return templates.Render(context, http.StatusOK, templates.DefaultLayout(templates.NewPostButton()))
 }
 
 func (server *server) handleCreatePost(context echo.Context) error {
