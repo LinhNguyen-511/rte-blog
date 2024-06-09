@@ -1,0 +1,69 @@
+package templates 
+
+import (
+	"rte-blog/types"
+	"fmt"
+	"strconv"
+)
+
+templ PostLayout(post types.Post) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@head()
+		@body(post)
+	</html>
+}
+
+templ body(post types.Post) {
+	<body>
+		<nav>
+			@NewPostButton()
+		</nav>
+		@Main(post)
+		@script()
+	</body>
+}
+
+templ Main(post types.Post) {
+	<main
+		hx-post={ string(templ.URL(fmt.Sprintf("/posts/%s/paragraphs", strconv.Itoa(post.Id)))) }
+		hx-vals={ fmt.Sprintf("{\"orderInPost\": %d}", len(post.Contents)) }
+		hx-trigger="keyup[key=='Enter']"
+		hx-on::after-swap="focusNewParagraph()"
+	>
+		<header>
+			<h1
+				id="title"
+				name="title"
+				_="on htmx:configRequest(parameters) set parameters['title'] to my innerHTML"
+				hx-trigger="keyup[key!='Enter']"
+				hx-put={ string(templ.URL(fmt.Sprintf("/posts/%s/title", strconv.Itoa(post.Id)))) }
+				hx-swap="none"
+				contenteditable
+				hx-params="none"
+				data-testid="title"
+			>
+				{ post.Title }
+			</h1>
+			<p data-testid="author-name">{ post.AuthorName }</p>
+			<p data-testid="publish-date">{ post.PublishedAt.String() }</p>
+		</header>
+		<article id="main-content">
+			@content(post.Contents)
+		</article>
+	</main>
+}
+
+templ content(contents []types.Content) {
+	for index, paragraph := range contents {
+		<p contenteditable id={ fmt.Sprintf("paragraph-%d", index) }>{ paragraph.Value }</p>
+	}
+}
+
+templ script() {
+	<script type="text/javascript">
+		function focusNewParagraph() {
+			document.getElementById("main-content").lastChild.focus()
+		}
+	</script>
+}
