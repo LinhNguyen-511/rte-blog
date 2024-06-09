@@ -70,8 +70,8 @@ func (server *server) handleParagraphCreate(context echo.Context) error {
 	// _, err = server.postModel.PostContent(id, 1)
 
 	contents := [1]types.Content{}
-	contents[0] = types.Content{Id: 1, Value: "new", Type: "paragraphs"}
+	contents[0] = types.Content{Id: 1, Value: "", Type: "paragraphs"}
 
 	// TODO return the whole main element with title, meta-data, contents in the correct order
-	return templates.Render(context, http.StatusOK, templates.Main(types.Post{Title: "hello", AuthorName: "Linh", Contents: contents[:]}))
+	return templates.Render(context, http.StatusOK, templates.Main(types.Post{Title: "new", AuthorName: "Linh", Contents: contents[:]}))
 }

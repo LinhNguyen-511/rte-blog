@@ -20,15 +20,16 @@ templ body(post types.Post) {
 			@NewPostButton()
 		</nav>
 		@Main(post)
+		@script()
 	</body>
 }
 
 templ Main(post types.Post) {
 	<main
 		hx-post={ string(templ.URL(fmt.Sprintf("/posts/%s/paragraphs", strconv.Itoa(post.Id)))) }
-		hx-vals={ string(fmt.Sprintf("{\"orderInPost\": %d}", len(post.Contents))) }
+		hx-vals={ fmt.Sprintf("{\"orderInPost\": %d}", len(post.Contents)) }
 		hx-trigger="keyup[key=='Enter']"
-		hx-swap="none"
+		hx-on::after-swap="focusNewParagraph()"
 	>
 		<header>
 			<h1
@@ -47,7 +48,7 @@ templ Main(post types.Post) {
 			<p data-testid="author-name">{ post.AuthorName }</p>
 			<p data-testid="publish-date">{ post.PublishedAt.String() }</p>
 		</header>
-		<article>
+		<article id="main-content">
 			@content(post.Contents)
 		</article>
 	</main>
@@ -55,10 +56,14 @@ templ Main(post types.Post) {
 
 templ content(contents []types.Content) {
 	for index, paragraph := range contents {
-		if index == len(contents)-1 {
-			<p autofocus id={ string(fmt.Sprintf("paragraph-%d", index)) }>{ paragraph.Value }</p>
-		} else {
-			<p id={ string(fmt.Sprintf("paragraph-%d", index)) }>{ paragraph.Value }</p>
-		}
+		<p contenteditable id={ fmt.Sprintf("paragraph-%d", index) }>{ paragraph.Value }</p>
 	}
+}
+
+templ script() {
+	<script type="text/javascript">
+		function focusNewParagraph() {
+			document.getElementById("main-content").lastChild.focus()
+		}
+	</script>
 }
