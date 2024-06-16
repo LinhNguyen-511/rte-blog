@@ -6,6 +6,7 @@ import (
 	"rte-blog/services"
 	"rte-blog/templates"
 	"rte-blog/types"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -62,16 +63,23 @@ func (server *server) handlePutPostTitle(context echo.Context) error {
 }
 
 func (server *server) handleParagraphCreate(context echo.Context) error {
-	// id, err := services.ExtractIdFromContext(context)
-	// if err != nil {
-	// return err
-	// }
+	postId, err := services.ExtractIdFromContext(context)
+	if err != nil {
+		return err
+	}
 
-	// _, err = server.postModel.PostContent(id, 1)
+	orderInPost, err := strconv.Atoi(context.FormValue("orderInPost"))
+	if err != nil {
+		return err
+	}
+
+	paragraph, err := server.postModel.CreatePostContent(postId, orderInPost)
+	if err != nil {
+		return err
+	}
 
 	contents := [1]types.Content{}
-	contents[0] = types.Content{Id: 1, Value: "", Type: "paragraphs"}
+	contents[0] = *paragraph
 
-	// TODO return the whole main element with title, meta-data, contents in the correct order
 	return templates.Render(context, http.StatusOK, templates.Main(types.Post{Title: "new", AuthorName: "Linh", Contents: contents[:]}))
 }

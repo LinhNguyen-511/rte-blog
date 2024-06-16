@@ -32,8 +32,8 @@ func (model *StubPostModel) PutTitle(post types.Post) (types.Post, error) {
 	return post, nil
 }
 
-func (model *StubPostModel) PostContent(id int) (types.Content, error) {
-	return types.Content{Id: 1}, nil
+func (model *StubPostModel) CreatePostContent(id int) (*types.Content, error) {
+	return &types.Content{Id: 1}, nil
 }
 
 func TestHandleGetPost(t *testing.T) {

@@ -17,11 +17,12 @@ type Post struct {
 }
 
 type Content struct {
-	Id    int
-	Value string
-	Type  string
+	Id        int
+	ContentId int
+	Value     string
+	Type      string
 }
 
 const (
-	ContentParagraph = "paragraph"
+	ContentParagraphs = "paragraphs"
 )
