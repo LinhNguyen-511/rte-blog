@@ -68,7 +68,7 @@ func (server *server) handleParagraphCreate(context echo.Context) error {
 		return err
 	}
 
-	orderInPost, err := strconv.Atoi(context.Param("orderInPost"))
+	orderInPost, err := strconv.Atoi(context.FormValue("orderInPost"))
 	if err != nil {
 		return err
 	}

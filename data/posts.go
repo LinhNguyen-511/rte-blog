@@ -51,9 +51,15 @@ func (model *PostModel) CreatePostContent(postId int, orderInPost int) (*types.C
 	var contentId int
 	var paragraphId int
 
-	transaction.QueryRow(`INSERT INTO posts_contents(content_type, post_id, order_in_post) VALUES ($1, $2, $3) RETURNING content_id`, types.ContentParagraphs, postId, orderInPost).Scan(&contentId)
+	err = transaction.QueryRow(`INSERT INTO posts_contents(content_type, post_id, order_in_post) VALUES ($1, $2, $3) RETURNING content_id`, types.ContentParagraphs, postId, orderInPost).Scan(&contentId)
+	if err != nil {
+		return nil, err
+	}
 	// insert into paragraphs
-	transaction.QueryRow(`INSERT INTO paragraphs(content_id, value) VALUES ($1, $2)`, contentId, "").Scan(&paragraphId)
+	err = transaction.QueryRow(`INSERT INTO paragraphs(content_id, value) VALUES ($1, $2) RETURNING id`, contentId, "").Scan(&paragraphId)
+	if err != nil {
+		return nil, err
+	}
 
 	paragraph.ContentId = contentId
 	paragraph.Id = paragraphId
