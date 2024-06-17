@@ -40,7 +40,7 @@ func (model *PostModel) GetById(postId int) (post *types.Post, err error) {
 	LEFT JOIN authors a ON a.id = p.author_id
 	LEFT JOIN posts_contents pc ON pc.post_id = p.id
 	LEFT JOIN paragraphs pa ON pc.content_id = pa.content_id
-	WHERE p.id = $1;
+	WHERE p.id = $1
 	`, postId)
 
 	return post, nil
