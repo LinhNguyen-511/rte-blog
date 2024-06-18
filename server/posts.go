@@ -7,7 +7,6 @@ import (
 	"rte-blog/templates"
 	"rte-blog/types"
 	"strconv"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -29,20 +28,13 @@ func (server *server) handleGetPost(context echo.Context) error {
 		return err
 	}
 
-	title, err := server.postModel.GetById(id)
-	post := types.Post{
-		Id:          id,
-		Title:       title,
-		AuthorName:  "",
-		PublishedAt: time.Now(),
-		Contents:    []types.Content{},
-	}
+	post, err := server.postModel.GetById(id)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return templates.Render(context, http.StatusOK, templates.PostLayout(post))
+	return templates.Render(context, http.StatusOK, templates.PostLayout(*post))
 }
 
 func (server *server) handlePutPostTitle(context echo.Context) error {
