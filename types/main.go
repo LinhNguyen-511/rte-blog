@@ -17,10 +17,10 @@ type Post struct {
 }
 
 type Content struct {
-	Id        int
-	ContentId int
-	Value     string
-	Type      string
+	ContentId   int
+	Value       string
+	Type        string
+	OrderInPost int
 }
 
 const (

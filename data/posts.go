@@ -3,11 +3,12 @@ package data
 import (
 	"database/sql"
 	"rte-blog/types"
+	"sort"
 )
 
 type PostStore interface {
 	Create(title string) (int, error)
-	GetById(id int) (title string, err error)
+	GetById(id int) (post *types.Post, err error)
 	PutTitle(post types.Post) (types.Post, error)
 	CreatePostContent(id int, orderInPost int) (*types.Content, error)
 }
@@ -25,9 +26,71 @@ func (model *PostModel) Create(title string) (postId int, err error) {
 	return postId, err
 }
 
-func (model *PostModel) GetById(id int) (title string, err error) {
-	model.Store.QueryRow("SELECT title FROM posts WHERE id = $1", id).Scan(&title)
-	return title, nil
+func (model *PostModel) GetById(postId int) (post *types.Post, err error) {
+	post = &types.Post{}
+
+	rows, err := model.Store.Query(`
+	SELECT  p.title, 
+			a.name as author_name, 
+			pc.content_id, pc.content_type, pc.order_in_post, 
+  		CASE pc.content_type
+    		WHEN 'paragraphs' THEN pa.value
+    	ELSE NULL
+  		END AS value
+	FROM posts p
+	LEFT JOIN authors a ON a.id = p.author_id
+	LEFT JOIN posts_contents pc ON pc.post_id = p.id
+	LEFT JOIN paragraphs pa ON pc.content_id = pa.content_id
+	WHERE p.id = $1;
+	`, postId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	// iterate the rows and populate the post's contents
+	for rows.Next() {
+		var authorName sql.NullString
+		var title, contentType, contentValue string
+		var contentId, orderInPost int
+
+		if err := rows.Scan(&title, &authorName, &contentId, &contentType, &orderInPost, &contentValue); err != nil {
+			return nil, err
+		}
+
+		if post.Title == "" || post.Id == 0 {
+			post.Title = title
+			post.Id = postId
+		}
+
+		if post.AuthorName == "" {
+			if authorName.Valid {
+				post.AuthorName = authorName.String
+			} else {
+				post.AuthorName = ""
+			}
+		}
+
+		content := types.Content{
+			ContentId:   contentId,
+			Type:        contentType,
+			Value:       contentValue,
+			OrderInPost: orderInPost,
+		}
+
+		post.Contents = append(post.Contents, content)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	sort.Slice(post.Contents, func(i, j int) bool {
+		return post.Contents[i].OrderInPost < post.Contents[j].OrderInPost
+	})
+
+	return post, nil
 }
 
 func (model *PostModel) PutTitle(post types.Post) (types.Post, error) {
@@ -62,7 +125,6 @@ func (model *PostModel) CreatePostContent(postId int, orderInPost int) (*types.C
 	}
 
 	paragraph.ContentId = contentId
-	paragraph.Id = paragraphId
 
 	if err = transaction.Commit(); err != nil {
 		return nil, err

@@ -24,8 +24,8 @@ func (model *StubPostModel) Create(title string) (int, error) {
 	return 1, nil
 }
 
-func (model *StubPostModel) GetById(id int) (string, error) {
-	return "Sample post", nil
+func (model *StubPostModel) GetById(id int) (post *types.Post, err error) {
+	return nil, nil
 }
 
 func (model *StubPostModel) PutTitle(post types.Post) (types.Post, error) {
