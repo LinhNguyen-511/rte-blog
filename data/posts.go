@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"rte-blog/types"
+	"sort"
 )
 
 type PostStore interface {
@@ -72,9 +73,10 @@ func (model *PostModel) GetById(postId int) (post *types.Post, err error) {
 		}
 
 		content := types.Content{
-			ContentId: contentId,
-			Type:      contentType,
-			Value:     contentValue,
+			ContentId:   contentId,
+			Type:        contentType,
+			Value:       contentValue,
+			OrderInPost: orderInPost,
 		}
 
 		post.Contents = append(post.Contents, content)
@@ -83,6 +85,10 @@ func (model *PostModel) GetById(postId int) (post *types.Post, err error) {
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
+
+	sort.Slice(post.Contents, func(i, j int) bool {
+		return post.Contents[i].OrderInPost < post.Contents[j].OrderInPost
+	})
 
 	return post, nil
 }
